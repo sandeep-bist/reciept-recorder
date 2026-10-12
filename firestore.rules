@@ -1,0 +1,58 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidReceipt(data, userId) {
+      return data.userId == userId &&
+        data.storeName is string && data.storeName.size() > 0 && data.storeName.size() <= 200 &&
+        data.date is string && data.date.size() >= 8 && data.date.size() <= 32 &&
+        data.total is number && data.total >= 0 &&
+        data.items is list && data.items.size() <= 500;
+    }
+
+    function isValidSettings(data, userId) {
+      return data.userId == userId;
+    }
+
+    // User-scoped receipts collection
+    match /users/{userId}/receipts/{receiptId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidId(receiptId) && isValidReceipt(incoming(), userId);
+      allow update: if isOwner(userId) && isValidId(receiptId) && isValidReceipt(incoming(), userId) &&
+        incoming().userId == existing().userId;
+      allow delete: if isOwner(userId) && isValidId(receiptId);
+    }
+
+    // User-scoped settings
+    match /users/{userId}/settings/{settingsId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && isValidId(settingsId) && isValidSettings(incoming(), userId);
+      allow delete: if isOwner(userId) && isValidId(settingsId);
+    }
+  }
+}

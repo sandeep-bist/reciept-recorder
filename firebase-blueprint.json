@@ -1,0 +1,67 @@
+{
+  "entities": {
+    "ReceiptItem": {
+      "title": "ReceiptItem",
+      "description": "An individual line item extracted from a receipt",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "cleanName": { "type": "string" },
+        "category": { "type": "string" },
+        "quantity": { "type": "number" },
+        "unit": { "type": "string" },
+        "unitPrice": { "type": "number" },
+        "totalPrice": { "type": "number" },
+        "discount": { "type": "number" },
+        "notes": { "type": "string" }
+      },
+      "required": ["name", "cleanName", "category", "quantity", "unitPrice", "totalPrice"]
+    },
+    "Receipt": {
+      "title": "Receipt",
+      "description": "A store purchase receipt or invoice",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "storeName": { "type": "string" },
+        "storeLocation": { "type": "string" },
+        "date": { "type": "string" },
+        "billNumber": { "type": "string" },
+        "items": { "type": "array" },
+        "subtotal": { "type": "number" },
+        "tax": { "type": "number" },
+        "discount": { "type": "number" },
+        "total": { "type": "number" },
+        "paymentMethod": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["storeName", "date", "items", "total", "userId"]
+    },
+    "UserSettings": {
+      "title": "UserSettings",
+      "description": "User preferences and sync settings",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "currency": { "type": "string" },
+        "theme": { "type": "string" },
+        "selectedModel": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/receipts/{receiptId}": {
+      "schema": "Receipt",
+      "description": "User purchase receipts synced across devices"
+    },
+    "/users/{userId}/settings/{settingsId}": {
+      "schema": "UserSettings",
+      "description": "User settings document"
+    }
+  }
+}

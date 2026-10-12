@@ -1,0 +1,11 @@
+{
+  "name": "BillTrack - Smart Receipt Scanner & Price Tracker",
+  "description": "Scan receipts from DMart, Smart Bazaar & local stores. Track when you last bought any item with price and store details, categorize groceries, and view monthly spending trends.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
+
